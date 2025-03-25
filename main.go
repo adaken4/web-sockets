@@ -12,5 +12,7 @@ func main() {
 }
 
 func setupAPI() {
+	manager := NewManager()
+	http.HandleFunc("/ws", manager.serveWS)
 	http.Handle("/", http.FileServer(http.Dir("./frontend")))
 }
