@@ -48,7 +48,7 @@
 
             if (window["WebSocket"]) {
                 console.log("supports websockets");
-                // connect to ws
+                conn = new WebSocket("ws://" + document.location.host + "/ws");
             } else {
                 alert("Browser does not support web sockets")
             }
