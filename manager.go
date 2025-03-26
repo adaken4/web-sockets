@@ -36,6 +36,9 @@ func (m *Manager) serveWS(w http.ResponseWriter, r *http.Request) {
 
 	client := NewClient(conn, m)
 	m.addClient(client)
+
+	// Start client processes
+	go client.readMessages()
 }
 
 func (m *Manager) addClient(client *Client) {
@@ -52,5 +55,26 @@ func (m *Manager) removeClient(client *Client) {
 	if _, ok := m.clients[client]; ok {
 		client.connection.Close()
 		delete(m.clients, client)
+	}
+}
+
+func (c *Client) readMessages() {
+	defer func() {
+		// cleanup connection
+		c.manager.removeClient(c)
+	}()
+
+	for {
+		messageType, payload, err := c.connection.ReadMessage()
+
+		if err != nil {
+			if websocket.IsUnexpectedCloseError(err, websocket.CloseGoingAway, websocket.CloseAbnormalClosure) {
+				log.Printf("error reading message: %v", err)
+			}
+			break
+		}
+
+		log.Println(messageType)
+		log.Println(string(payload))
 	}
 }

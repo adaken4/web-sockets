@@ -37,7 +37,7 @@
         function sendMessage() {
             let newmessage = document.getElementById("message");
             if (newmessage != null) {
-                console.log(newmessage.value);
+                conn.send(newmessage.value);
             }
             return false;
         }
